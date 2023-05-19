@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee Directory</title>
+  <style>
+    /* Add your custom CSS styles here for the visually appealing UI */
+   body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: left;
+}
+
+.table td {
+  vertical-align: top;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.skill {
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 4px;
+}
+
+.projects {
+  margin-top: 10px;
+}
+
+.project {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.project-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.project-description {
+  color: #666;
+}
+
+.team {
+  margin-top: 10px;
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.team-member-name {
+  margin-left: 5px;
+}
+
+.tasks {
+  margin-top: 10px;
+}
+
+.task {
+  margin-bottom: 5px;
+}
+
+.task-id {
+  font-weight: bold;
+}
+
+.task-status {
+  font-style: italic;
+  color: #666;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Employee Directory</h1>
+  <input type="text" id="searchName" placeholder="Search by name">
+  <input type="text" id="searchDesignationSkills" placeholder="Filter by designation/skills">
+  <div id="employeeList"></div>
+
+  <script>
+    // Fetch JSON data from the provided source
+    fetch('https://raw.githubusercontent.com/dixitsoham7/dixitsoham7.github.io/main/index.json')
+      .then(response => response.json())
+      .then(data => {
+        // Store the JSON data in a variable
+        const employees = data.employees;
+
+        // Render the employee list on the screen
+        renderEmployeeList(employees);
+
+        // Add event listeners for search functionality
+        document.getElementById('searchName').addEventListener('input', function () {
+          const searchValue = this.value;
+          const filteredEmployees = filterEmployeesByName(employees, searchValue);
+          renderEmployeeList(filteredEmployees);
+        });
+
+        document.getElementById('searchDesignationSkills').addEventListener('input', function () {
+          const searchValue = this.value;
+          const filteredEmployees = filterEmployeesByDesignationSkills(employees, searchValue);
+          renderEmployeeList(filteredEmployees);
+        });
+      });
+
+    // Render the employee list on the screen
+    function renderEmployeeList(employees) {
+      const employeeListContainer = document.getElementById('employeeList');
+      employeeListContainer.innerHTML = '';
+
+      if (employees.length === 0) {
+        const noResultsMessage = document.createElement('p');
+        noResultsMessage.textContent = 'No employees found.';
+        employeeListContainer.appendChild(noResultsMessage);
+        return;
+      }
+
+      employees.forEach(employee => {
+        const employeeItem = document.createElement('div');
+        employeeItem.classList.add('employee');
+
+        const name = document.createElement('p');
+        name.textContent = `Name: ${employee.name || 'N/A'}`;
+        employeeItem.appendChild(name);
+
+        const designation = document.createElement('p');
+        designation.textContent = `Designation: ${employee.designation || 'N/A'}`;
+        employeeItem.appendChild(designation);
+
+        const skills = document.createElement('p');
+        skills.textContent = `Skills: ${employee.skills.join(', ')}`;
+        employeeItem.appendChild(skills);
+
+        employeeListContainer.appendChild(employeeItem);
+      });
+    }
+
+    // Filter employees by name
+    function filterEmployeesByName(employees, name) {
+      return employees.filter(employee => employee.name && employee.name.toLowerCase().includes(name.toLowerCase()));
+    }
+
+    // Filter employees by designation/skills
+    function filterEmployeesByDesignationSkills(employees, value) {
+      return employees.filter(employee => {
+        if (employee.designation && employee.designation.toLowerCase().includes(value.toLowerCase())) {
+          return true;
+        }
+        if (employee.skills && employee.skills.some(skill => skill.toLowerCase().includes(value.toLowerCase()))) {
+          return true;
+        }
+        return false;
+      });
+    }
+  </script>
+</body>
+</html>
